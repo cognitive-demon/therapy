@@ -16,7 +16,7 @@ def get_prompt():
                 return f.read().strip()
     except Exception as e:
         print(f"Prompt loading error: {e}")
-    return "CBTカウンセラーとしてJSONで回答してください。"
+    return "あなたは優秀なCBTカウンセラーです。必ずJSON形式で回答してください。"
 
 SYSTEM_PROMPT = get_prompt()
 
@@ -24,39 +24,42 @@ SYSTEM_PROMPT = get_prompt()
 def home():
     if request.method == 'OPTIONS':
         return '', 200
+    
     if request.method == 'GET':
         return "CBT Backend is Online"
 
     api_key = os.environ.get("GEMINI_API_KEY", "").strip()
-    url = "[https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent](https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent)"
+    url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
 
     try:
         data = request.get_json()
         thought = data.get('thought', '入力なし')
+
         payload = {
             "contents": [{"parts": [{"text": f"{SYSTEM_PROMPT}\n\nユーザーの思考: {thought}"}]}]
         }
 
         response = requests.post(url, params={"key": api_key}, json=payload, timeout=25)
+        
         if response.status_code != 200:
             return jsonify({"error": "Gemini API Error", "detail": response.text}), response.status_code
 
         result = response.json()
         ai_text = result['candidates'][0]['content']['parts'][0]['text'].strip()
         
-        # JSON以外の部分を削ぎ落とす
-        start = ai_text.find('{')
-        end = ai_text.rfind('}') + 1
-        if start != -1 and end != 0:
-            clean_json = ai_text[start:end]
-            return jsonify(json.loads(clean_json))
+        start_idx = ai_text.find('{')
+        end_idx = ai_text.rfind('}') + 1
+        if start_idx != -1 and end_idx > 0:
+            json_str = ai_text[start_idx:end_idx]
+            return jsonify(json.loads(json_str))
         else:
-            raise ValueError("AIの応答がJSON形式ではありませんでした")
+            raise ValueError("AI response does not contain valid JSON")
 
     except Exception as e:
         print(f"Error: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
+    # ポート番号の取得とサーバー起動を確実に行います
     port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port, debug=False)
+    app.run(host="0.0.0.0", port=port)
