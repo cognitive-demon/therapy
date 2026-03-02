@@ -32,7 +32,14 @@ def home():
     url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
 
     try:
+        # 415エラー対策: JSONリクエストでない場合は早期リターン
+        if request.method == 'POST' and not request.is_json:
+            return jsonify({"error": "Content-Type must be application/json"}), 415
+
         data = request.get_json()
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+            
         thought = data.get('thought', '入力なし')
 
         payload = {
