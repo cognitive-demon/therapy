@@ -16,7 +16,7 @@ def get_prompt():
                 return f.read().strip()
     except Exception as e:
         print(f"Prompt loading error: {e}")
-    return "CBTカウンセラーとしてJSON形式で回答してください。"
+    return "あなたは優秀なCBTカウンセラーです。JSON形式で回答してください。"
 
 SYSTEM_PROMPT = get_prompt()
 
@@ -38,20 +38,12 @@ def home():
         }
 
         response = requests.post(url, params={"key": api_key}, json=payload, timeout=25)
-        if response.status_code != 200:
-            return jsonify({"error": "Gemini API Error", "detail": response.text}), response.status_code
-
         result = response.json()
         ai_text = result['candidates'][0]['content']['parts'][0]['text'].strip()
         
-        start_idx = ai_text.find('{')
-        end_idx = ai_text.rfind('}') + 1
-        if start_idx != -1 and end_idx > 0:
-            json_str = ai_text[start_idx:end_idx]
-            return jsonify(json.loads(json_str))
-        else:
-            raise ValueError("Invalid JSON response")
-
+        start = ai_text.find('{')
+        end = ai_text.rfind('}') + 1
+        return jsonify(json.loads(ai_text[start:end]))
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
