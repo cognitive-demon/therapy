@@ -1,174 +1,144 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests; connect-src 'self' https://therapy-xsoy.onrender.com;">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests; connect-src 'self' https://game-analysis.onrender.com;">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ココロの整理 - CBT人生相談カウンセラー</title>
+    <title>心理ゲーム・アナライザー Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
-            --mint-main: #e6f7f3;
-            --mint-accent: #4fd1c5;
-            --mint-dark: #2d3748;
+            --game-main: #f8fafc;
+            --game-accent: #6366f1;
+            --game-dark: #1e293b;
         }
-        body { background-color: #f0fdfa; color: var(--mint-dark); }
-        .mint-card { background: white; border: 1px solid #ccf2e9; border-radius: 1.5rem; }
-        .distortion-tag {
-            background-color: #fef2f2;
-            color: #ef4444;
-            padding: 4px 12px;
-            border-radius: 9999px;
-            font-weight: bold;
-            font-size: 0.875rem;
-            border: 1px solid #fee2e2;
-        }
-        input[type=range] { font-size: 1.5rem; width: 100%; cursor: pointer; }
-        #password-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #f0fdfa; z-index: 9999; display: flex;
-            align-items: center; justify-content: center;
-        }
-        /* プルダウンのスタイリング */
-        details summary { cursor: pointer; list-style: none; outline: none; }
-        details summary::-webkit-details-marker { display: none; }
+        body { background-color: var(--game-main); color: var(--game-dark); font-family: 'sans-serif'; }
+        .game-card { background: white; border: 1px solid #e2e8f0; border-radius: 1.5rem; }
+        .ok-box { transition: all 0.3s ease; }
+        .ok-badge { padding: 2px 8px; border-radius: 6px; font-weight: bold; font-size: 0.75rem; }
+        .badge-ok { background: #dcfce7; color: #166534; }
+        .badge-not-ok { background: #fee2e2; color: #991b1b; }
     </style>
 </head>
 <body class="min-h-screen pb-12">
 
-    <div id="password-overlay">
-        <div class="mint-card p-8 shadow-xl text-center space-y-4 mx-4 w-full max-w-sm">
-            <h2 class="text-xl font-bold text-teal-800">パスワードが必要です</h2>
-            <input type="password" id="pass-input" class="w-full p-3 border border-teal-100 rounded-xl outline-none focus:ring-2 focus:ring-teal-400" placeholder="Password">
-            <button onclick="checkPassword()" class="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 rounded-xl transition">認証</button>
-        </div>
-    </div>
-
-    <div id="main-content" class="invisible max-w-2xl mx-auto px-4 py-10">
+    <div class="max-w-2xl mx-auto px-4 py-10">
         <header class="text-center mb-10">
-            <h1 class="text-3xl font-bold text-teal-800">AIココロの棚卸しアプリ</h1>
-            <p class="text-teal-600 mt-2">あなたの認知の歪みを、少し変えてみませんか。</p>
+            <h1 class="text-3xl font-bold text-indigo-900 leading-tight">心理ゲーム・アナライザー</h1>
+            <p class="text-indigo-600 mt-2 font-medium">「OK牧場」の変遷から、隠れたシナリオを暴く</p>
         </header>
 
-        <div id="input-section" class="mint-card shadow-sm p-8 space-y-6">
+        <div id="input-section" class="game-card shadow-xl p-8 space-y-6 border-t-4 border-indigo-500">
             <div>
-                <label class="block text-lg font-semibold mb-3">1. 今、頭に浮かんでいることは？</label>
-                <textarea id="user-thought" class="w-full h-32 p-4 border border-teal-100 rounded-xl focus:ring-2 focus:ring-teal-400 focus:border-transparent outline-none bg-teal-50/30 transition" placeholder="例：連絡が来ない。嫌われたに違いない。"></textarea>
+                <label class="block text-lg font-bold mb-3 text-slate-700">今、どんなやり取りがありましたか？</label>
+                <textarea id="user-thought" class="w-full h-32 p-4 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-indigo-400 focus:border-transparent outline-none bg-slate-50 transition placeholder-slate-400" placeholder="例：良かれと思ってアドバイスしたのに、相手が不機嫌になり、最後は私もイライラしてしまった。"></textarea>
             </div>
 
             <div>
-                <label class="block text-lg font-semibold mb-1">2. その考えにどれくらいとらわれていますか？</label>
-                <div class="flex items-center gap-4">
-                    <input type="range" id="belief-range" min="0" max="100" value="50" class="accent-teal-500" oninput="document.getElementById('range-val').innerText = this.value + '%'">
-                    <span id="range-val" class="text-2xl font-bold text-teal-600 w-16 text-right">50%</span>
+                <label class="block text-sm font-bold mb-2 text-slate-600">その考えにどれくらい「とらわれて」いますか？ (0-100%)</label>
+                <div class="flex items-center space-x-4">
+                    <input type="range" id="conviction-slider" min="0" max="100" value="50" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+                    <span id="slider-value" class="text-indigo-600 font-bold w-12 text-right">50%</span>
                 </div>
             </div>
 
-            <button onclick="analyzeThought()" id="submit-btn" class="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-teal-100 text-lg">
-                心を分析する
+            <button onclick="analyzeThought()" id="submit-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-indigo-200 text-lg">
+                深層心理を分析する
             </button>
         </div>
 
         <div id="loading" class="hidden text-center py-16">
-            <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-teal-500 border-t-transparent"></div>
-            <p class="mt-6 text-teal-700 font-medium">AIカウンセラーが分析しています...</p>
+            <div class="inline-block animate-spin rounded-full h-12 w-12 border-4 border-indigo-500 border-t-transparent"></div>
+            <p class="mt-6 text-indigo-800 font-bold">無意識のポジション遷移を解析中...</p>
         </div>
 
         <div id="result-section" class="hidden space-y-6 mt-8">
-            <div class="space-y-4">
-                <h2 class="text-xl font-bold text-teal-800 text-center mb-4">3つのモードでアドバイス</h2>
-                
-                <details class="bg-orange-50 border border-orange-100 rounded-3xl overflow-hidden">
-                    <summary class="p-6 font-bold text-orange-600 flex justify-between items-center">
-                        <span>📢 昭和モード</span>
-                        <span class="text-xs opacity-50">クリックで展開</span>
-                    </summary>
-                    <div class="px-6 pb-6 text-orange-900 leading-relaxed text-sm md:text-base border-t border-orange-100/50 pt-4">
-                        <p id="preach-text"></p>
+            <div class="game-card p-6 shadow-md border-l-8 border-indigo-600">
+                <h3 class="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-1">特定された心理ゲーム</h3>
+                <div id="game-name" class="text-2xl font-black text-indigo-900 mb-2"></div>
+                <p id="game-definition" class="text-sm text-slate-500 leading-relaxed italic border-t pt-2"></p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="game-card p-5 border-blue-100 bg-blue-50/30">
+                    <h4 class="text-blue-700 font-bold text-sm mb-3 flex items-center">
+                        <span class="mr-2">▶</span> ゲーム開始時の位置
+                    </h4>
+                    <div class="flex justify-between items-center mb-2">
+                        <span id="pos-start-self" class="ok-badge"></span>
+                        <span class="text-slate-400">/</span>
+                        <span id="pos-start-others" class="ok-badge"></span>
                     </div>
-                </details>
-
-                <details class="bg-slate-100 border border-slate-200 rounded-3xl overflow-hidden">
-                    <summary class="p-6 font-bold text-slate-600 flex justify-between items-center">
-                        <span>😐 平成モード</span>
-                        <span class="text-xs opacity-50">クリックで展開</span>
-                    </summary>
-                    <div class="px-6 pb-6 text-slate-800 leading-relaxed text-sm md:text-base border-t border-slate-200/50 pt-4">
-                        <p id="blank-text"></p>
+                    <p id="pos-start-desc" class="text-xs text-slate-600 leading-tight"></p>
+                </div>
+                <div class="game-card p-5 border-rose-100 bg-rose-50/30">
+                    <h4 class="text-rose-700 font-bold text-sm mb-3 flex items-center">
+                        <span class="mr-2">▼</span> 予測される結末の位置
+                    </h4>
+                    <div class="flex justify-between items-center mb-2">
+                        <span id="pos-end-self" class="ok-badge"></span>
+                        <span class="text-slate-400">/</span>
+                        <span id="pos-end-others" class="ok-badge"></span>
                     </div>
-                </details>
-
-                <details class="bg-pink-50 border border-pink-100 rounded-3xl overflow-hidden">
-                    <summary class="p-6 font-bold text-pink-500 flex justify-between items-center">
-                        <span>🌸 令和モード</span>
-                        <span class="text-xs opacity-50">クリックで展開</span>
-                    </summary>
-                    <div class="px-6 pb-6 text-pink-900 leading-relaxed text-sm md:text-base border-t border-pink-100/50 pt-4">
-                        <p id="heal-text"></p>
-                    </div>
-                </details>
+                    <p id="pos-end-desc" class="text-xs text-slate-600 leading-tight"></p>
+                </div>
             </div>
 
-            <div class="mint-card p-6 shadow-sm text-center">
-                <h3 class="text-xs font-bold text-teal-400 uppercase tracking-widest mb-4">見つかった認知の歪み</h3>
-                <div id="distortion-list" class="flex flex-wrap justify-center gap-2"></div>
+            <div class="bg-slate-900 text-white rounded-3xl p-8 shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl font-black">!</div>
+                <h3 class="text-indigo-400 text-sm font-bold uppercase mb-3">⚠️ このまま進んだ場合の「破綻」</h3>
+                <p id="prediction" class="text-xl leading-relaxed font-bold text-white"></p>
             </div>
 
-            <div class="mint-card p-6 border-l-4 border-l-teal-400">
-                <h3 class="font-bold text-teal-700 mb-2">💡 その考えのメリット</h3>
-                <p id="benefit-text" class="text-slate-600 text-sm leading-relaxed"></p>
+            <div class="grid grid-cols-1 gap-4">
+                <div class="bg-white border border-slate-200 rounded-2xl p-6">
+                    <h3 class="font-bold text-slate-800 mb-2 flex items-center">
+                        <span class="mr-2 text-indigo-500">🔍</span> 無意識の真実（利得）
+                    </h3>
+                    <p id="hidden-motive" class="text-slate-600 text-base leading-relaxed"></p>
+                </div>
+                <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-6">
+                    <h3 class="font-bold text-emerald-800 mb-2 flex items-center">
+                        <span class="mr-2">💡</span> 自律的な大人としての回避策
+                    </h3>
+                    <p id="advice" class="text-emerald-900 font-bold text-base leading-relaxed"></p>
+                </div>
             </div>
 
-            <div class="bg-teal-600 text-white rounded-3xl p-8 shadow-md">
-                <h3 class="text-teal-100 text-sm font-bold uppercase mb-4 tracking-wider">🚀 次のステップ</h3>
-                <ul id="action-list" class="list-disc list-inside space-y-2 font-medium"></ul>
-            </div>
-
-            <button onclick="location.reload()" class="w-full py-6 text-teal-500 hover:text-teal-700 font-bold transition flex items-center justify-center gap-2">
-                <span>←</span> 別のことを相談する
+            <button onclick="location.reload()" class="w-full py-6 text-slate-400 hover:text-indigo-600 font-bold transition-all">
+                ← 別のパターンを分析する
             </button>
         </div>
     </div>
 
     <script>
-        function checkPassword() {
-            const pass = document.getElementById('pass-input').value;
-            if (pass === "okok") {
-                document.getElementById('password-overlay').style.display = 'none';
-                document.getElementById('main-content').classList.remove('invisible');
-            } else {
-                alert("パスワードが違います。");
-            }
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            fetch('https://therapy-xsoy.onrender.com/')
-                .then(r => console.log('Backend Awake'))
-                .catch(e => console.error('Wake-up error:', e));
+        document.getElementById('conviction-slider').addEventListener('input', (e) => {
+            document.getElementById('slider-value').innerText = e.target.value + '%';
         });
 
         async function analyzeThought() {
             const thought = document.getElementById('user-thought').value;
-            if (!thought) return alert('今の気持ちを入力してください');
+            const conviction = document.getElementById('conviction-slider').value;
+            if (!thought) return alert('やり取りの内容を入力してください');
 
             document.getElementById('input-section').classList.add('hidden');
             document.getElementById('loading').classList.remove('hidden');
 
             try {
-                const response = await fetch('https://therapy-xsoy.onrender.com/', {
+                const response = await fetch('https://game-analysis.onrender.com/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ thought: thought })
+                    body: JSON.stringify({ 
+                        thought: thought,
+                        conviction: conviction 
+                    })
                 });
 
-                if (!response.ok) throw new Error(`Server error: ${response.status}`);
-                
                 const data = await response.json();
                 displayResults(data);
-
             } catch (error) {
-                alert("エラーが発生しました。コンソールを確認してください。");
                 console.error(error);
+                alert("解析中にエラーが発生しました。");
                 document.getElementById('input-section').classList.remove('hidden');
                 document.getElementById('loading').classList.add('hidden');
             }
@@ -179,29 +149,30 @@
             document.getElementById('result-section').classList.remove('hidden');
 
             const res = (typeof data === 'string') ? JSON.parse(data) : data;
+            const posStart = res.position_start || { self: '?', others: '?', description: '-' };
+            const posEnd = res.position_end || { self: '?', others: '?', description: '-' };
 
-            const distList = document.getElementById('distortion-list');
-            distList.innerHTML = '';
-            (res.distortions || ["なし"]).forEach(d => {
-                const span = document.createElement('span');
-                span.className = 'distortion-tag';
-                span.innerText = d;
-                distList.appendChild(span);
-            });
-
-            document.getElementById('preach-text').innerText = res.preach_mode || '...';
-            document.getElementById('blank-text').innerText = res.blank_mode || '...';
-            document.getElementById('heal-text').innerText = res.heal_mode || '...';
+            document.getElementById('game-name').innerText = res.game_name || "分析不能";
+            document.getElementById('game-definition').innerText = res.definition || "";
             
-            document.getElementById('benefit-text').innerText = res.benefit || '-';
+            renderBadge('pos-start-self', posStart.self);
+            renderBadge('pos-start-others', posStart.others);
+            document.getElementById('pos-start-desc').innerText = posStart.description;
 
-            const actionList = document.getElementById('action-list');
-            actionList.innerHTML = '';
-            (res.actions || []).forEach(a => {
-                const li = document.createElement('li');
-                li.innerText = a;
-                actionList.appendChild(li);
-            });
+            renderBadge('pos-end-self', posEnd.self);
+            renderBadge('pos-end-others', posEnd.others);
+            document.getElementById('pos-end-desc').innerText = posEnd.description;
+
+            document.getElementById('prediction').innerText = res.prediction || "-";
+            document.getElementById('hidden-motive').innerText = res.hidden_motive || "-";
+            document.getElementById('advice').innerText = res.advice || "-";
+        }
+
+        function renderBadge(id, text) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.innerText = text;
+            el.className = 'ok-badge ' + (text.toLowerCase().includes('not ok') ? 'badge-not-ok' : 'badge-ok');
         }
     </script>
 </body>
