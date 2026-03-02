@@ -16,16 +16,7 @@ def get_prompt():
                 return f.read().strip()
     except Exception as e:
         print(f"Prompt loading error: {e}")
-    return """あなたは優秀な交流分析カウンセラーです。必ずJSON形式で回答してください。
-{
-  "game_name": "心理ゲーム名",
-  "definition": "定義",
-  "position_start": {"self": "I am OK/not OK", "others": "You are OK/not OK", "description": "開始時"},
-  "position_end": {"self": "I am OK/not OK", "others": "You are OK/not OK", "description": "結末"},
-  "prediction": "破綻の予測",
-  "hidden_motive": "無意識の利得",
-  "advice": "回避策"
-}"""
+    return "あなたは優秀なCBTカウンセラーです。必ずJSON形式で回答してください。"
 
 SYSTEM_PROMPT = get_prompt()
 
@@ -35,29 +26,22 @@ def home():
         return '', 200
     
     if request.method == 'GET':
-        return "CBT Backend is Online (Gemini 2.5 Flash Mode)"
+        return "CBT Backend is Online"
 
     api_key = os.environ.get("GEMINI_API_KEY", "").strip()
-    url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
+    # モデル名をユーザー指定の2.5-flashに固定
+    url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
 
     try:
         data = request.get_json()
         thought = data.get('thought', '入力なし')
-        conviction = data.get('conviction', '50')
+        belief = data.get('belief', '50')
 
-        full_prompt = f"{SYSTEM_PROMPT}\n\nユーザーの思考: {thought}\nとらわれ度: {conviction}%"
+        # 深刻度に応じた重みづけ指示を追加
+        weight_instruction = f"\n\n【重要：重みづけ】ユーザーの悩みに対する「とらわれ度」は {belief}% です。100%に近いほど深刻な危機として扱い、0%に近いほど軽い悩みとして扱ってください。0%の場合は「それは悩みではありません」という視点で回答してください。"
 
         payload = {
-            "contents": [{"parts": [{"text": full_prompt}]}],
-            "safetySettings": [
-                {"category": "HATE_SPEECH", "threshold": "BLOCK_ONLY_HIGH"},
-                {"category": "HARASSMENT", "threshold": "BLOCK_ONLY_HIGH"},
-                {"category": "SEXUALLY_EXPLICIT", "threshold": "BLOCK_ONLY_HIGH"},
-                {"category": "DANGEROUS_CONTENT", "threshold": "BLOCK_ONLY_HIGH"}
-            ],
-            "generationConfig": {
-                "response_mime_type": "application/json"
-            }
+            "contents": [{"parts": [{"text": f"{SYSTEM_PROMPT}{weight_instruction}\n\nユーザーの思考: {thought}"}]}]
         }
 
         response = requests.post(url, params={"key": api_key}, json=payload, timeout=25)
@@ -66,13 +50,21 @@ def home():
             return jsonify({"error": "Gemini API Error", "detail": response.text}), response.status_code
 
         result = response.json()
-        ai_text = result['candidates'][0]['content']['parts'][0]['text']
+        ai_text = result['candidates'][0]['content']['parts'][0]['text'].strip()
         
-        return jsonify(json.loads(ai_text))
+        start_idx = ai_text.find('{')
+        end_idx = ai_text.rfind('}') + 1
+        if start_idx != -1 and end_idx > 0:
+            json_str = ai_text[start_idx:end_idx]
+            # JSONとして妥当かチェックして返す
+            return jsonify(json.loads(json_str))
+        else:
+            raise ValueError("AI response does not contain valid JSON")
 
     except Exception as e:
-        return jsonify({"error": "Analysis Error", "detail": str(e)}), 200
+        print(f"Error: {str(e)}")
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port, debug=False)
+    app.run(host="0.0.0.0", port=port)
