@@ -77,16 +77,18 @@
                 <div id="distortion-list" class="flex flex-wrap justify-center gap-2"></div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-red-50 border border-red-100 rounded-3xl p-6 relative overflow-hidden">
-                    <div class="absolute -top-1 -right-1 opacity-10 text-6xl">😈</div>
-                    <h3 class="text-red-500 font-bold mb-3">悪魔のささやき</h3>
-                    <p id="devil-text" class="text-red-900 font-medium italic leading-relaxed text-sm md:text-base"></p>
+            <div class="space-y-4">
+                <div class="bg-red-50 border border-red-100 rounded-3xl p-6">
+                    <h3 class="text-red-500 font-bold mb-3 flex items-center gap-2">📢 お説教モード</h3>
+                    <p id="preach-text" class="text-red-900 leading-relaxed text-sm md:text-base whitespace-pre-wrap"></p>
                 </div>
-                <div class="bg-blue-50 border border-blue-100 rounded-3xl p-6 relative overflow-hidden">
-                    <div class="absolute -top-1 -right-1 opacity-10 text-6xl">😇</div>
-                    <h3 class="text-blue-500 font-bold mb-3">天使の導き</h3>
-                    <p id="angel-text" class="text-blue-900 font-medium leading-relaxed text-sm md:text-base"></p>
+                <div class="bg-slate-50 border border-slate-200 rounded-3xl p-6">
+                    <h3 class="text-slate-600 font-bold mb-3 flex items-center gap-2">😐 無表情モード</h3>
+                    <p id="blank-text" class="text-slate-900 leading-relaxed text-sm md:text-base whitespace-pre-wrap"></p>
+                </div>
+                <div class="bg-pink-50 border border-pink-100 rounded-3xl p-6">
+                    <h3 class="text-pink-500 font-bold mb-3 flex items-center gap-2">🌸 癒しモード</h3>
+                    <p id="heal-text" class="text-pink-900 leading-relaxed text-sm md:text-base whitespace-pre-wrap"></p>
                 </div>
             </div>
 
@@ -165,8 +167,9 @@
                 distList.appendChild(span);
             });
 
-            document.getElementById('devil-text').innerText = res.devil_voice || '...';
-            document.getElementById('angel-text').innerText = res.angel_voice || '...';
+            document.getElementById('preach-text').innerText = res.preach_mode || '...';
+            document.getElementById('blank-text').innerText = res.blank_mode || '...';
+            document.getElementById('heal-text').innerText = res.heal_mode || '...';
             document.getElementById('benefit-text').innerText = res.benefit || '-';
 
             const actionList = document.getElementById('action-list');

@@ -29,7 +29,7 @@ def home():
         return "CBT Backend is Online"
 
     api_key = os.environ.get("GEMINI_API_KEY", "").strip()
-    url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
+    url = "[https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent](https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent)"
 
     try:
         data = request.get_json()
@@ -60,6 +60,5 @@ def home():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    # ポート番号の取得とサーバー起動を確実に行います
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
