@@ -29,14 +29,12 @@
             background: #f0fdfa; z-index: 9999; display: flex;
             align-items: center; justify-content: center;
         }
-        details summary { cursor: pointer; outline: none; list-style: none; }
-        details summary::-webkit-details-marker { display: none; }
     </style>
 </head>
 <body class="min-h-screen pb-12">
 
     <div id="password-overlay">
-        <div class="mint-card p-8 shadow-xl text-center space-y-4 mx-4 w-full max-w-sm">
+        <div class="mint-card p-8 shadow-xl text-center space-y-4 mx-4 w-full max-sm">
             <h2 class="text-xl font-bold text-teal-800">パスワードが必要です</h2>
             <input type="password" id="pass-input" class="w-full p-3 border border-teal-100 rounded-xl outline-none focus:ring-2 focus:ring-teal-400" placeholder="Password">
             <button onclick="checkPassword()" class="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 rounded-xl transition">認証</button>
@@ -80,37 +78,17 @@
             </div>
 
             <div class="space-y-4">
-                <div class="bg-red-50 border border-red-100 rounded-3xl p-6">
-                    <details class="mb-2">
-                        <summary class="text-red-500 font-bold flex items-center gap-2">
-                            <span>📢 お説教モード</span>
-                            <span class="text-xs font-normal underline">(解説を表示)</span>
-                        </summary>
-                        <p class="text-xs text-red-700 mt-2 bg-white/50 p-2 rounded-lg">厳しい超自我の視点から、認知の歪みを論理的に一喝し、正論で思考を正すモードです。</p>
-                    </details>
-                    <p id="preach-text" class="text-red-900 leading-relaxed text-sm md:text-base whitespace-pre-wrap"></p>
+                <div class="bg-orange-50 border border-orange-100 rounded-3xl p-6">
+                    <h3 class="text-orange-600 font-bold mb-2 flex items-center gap-2">📢 お説教モード</h3>
+                    <p id="preach-text" class="text-orange-900 leading-relaxed text-sm md:text-base"></p>
                 </div>
-
-                <div class="bg-slate-50 border border-slate-200 rounded-3xl p-6">
-                    <details class="mb-2">
-                        <summary class="text-slate-600 font-bold flex items-center gap-2">
-                            <span>😐 無表情モード</span>
-                            <span class="text-xs font-normal underline">(解説を表示)</span>
-                        </summary>
-                        <p class="text-xs text-slate-700 mt-2 bg-white/50 p-2 rounded-lg">感情を一切排除し、事実と自己責任のみを淡々と指摘する、極めてドライな分析モードです。</p>
-                    </details>
-                    <p id="blank-text" class="text-slate-900 leading-relaxed text-sm md:text-base whitespace-pre-wrap"></p>
+                <div class="bg-slate-100 border border-slate-200 rounded-3xl p-6">
+                    <h3 class="text-slate-600 font-bold mb-2 flex items-center gap-2">😐 無表情モード</h3>
+                    <p id="blank-text" class="text-slate-800 leading-relaxed text-sm md:text-base"></p>
                 </div>
-
                 <div class="bg-pink-50 border border-pink-100 rounded-3xl p-6">
-                    <details class="mb-2">
-                        <summary class="text-pink-500 font-bold flex items-center gap-2">
-                            <span>🌸 癒しモード</span>
-                            <span class="text-xs font-normal underline">(解説を表示)</span>
-                        </summary>
-                        <p class="text-xs text-pink-700 mt-2 bg-white/50 p-2 rounded-lg">辛い気持ちに寄り添い、優しく受け入れながら、思考を解きほぐす手助けをするモードです。</p>
-                    </details>
-                    <p id="heal-text" class="text-pink-900 leading-relaxed text-sm md:text-base whitespace-pre-wrap"></p>
+                    <h3 class="text-pink-500 font-bold mb-2 flex items-center gap-2">🌸 癒しモード</h3>
+                    <p id="heal-text" class="text-pink-900 leading-relaxed text-sm md:text-base"></p>
                 </div>
             </div>
 
@@ -140,6 +118,12 @@
                 alert("パスワードが違います。");
             }
         }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            fetch('https://therapy-xsoy.onrender.com/')
+                .then(r => console.log('Backend Awake'))
+                .catch(e => console.error('Wake-up error:', e));
+        });
 
         async function analyzeThought() {
             const thought = document.getElementById('user-thought').value;
@@ -174,6 +158,7 @@
 
             const res = (typeof data === 'string') ? JSON.parse(data) : data;
 
+            // 認知の歪み
             const distList = document.getElementById('distortion-list');
             distList.innerHTML = '';
             (res.distortions || ["なし"]).forEach(d => {
@@ -183,9 +168,12 @@
                 distList.appendChild(span);
             });
 
-            document.getElementById('preach-text').innerText = res.devil_voice || '...';
+            // 3つのモード
+            document.getElementById('preach-text').innerText = res.preach_mode || '...';
             document.getElementById('blank-text').innerText = res.blank_mode || '...';
-            document.getElementById('heal-text').innerText = res.angel_voice || '...';
+            document.getElementById('heal-text').innerText = res.heal_mode || '...';
+            
+            // メリットと行動
             document.getElementById('benefit-text').innerText = res.benefit || '-';
 
             const actionList = document.getElementById('action-list');

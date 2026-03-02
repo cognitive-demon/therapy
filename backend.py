@@ -29,17 +29,11 @@ def home():
         return "CBT Backend is Online"
 
     api_key = os.environ.get("GEMINI_API_KEY", "").strip()
+    # モデル名をユーザー指定の2.5-flashに固定
     url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
 
     try:
-        # 415エラー対策: JSONリクエストでない場合は早期リターン
-        if request.method == 'POST' and not request.is_json:
-            return jsonify({"error": "Content-Type must be application/json"}), 415
-
         data = request.get_json()
-        if not data:
-            return jsonify({"error": "No data provided"}), 400
-            
         thought = data.get('thought', '入力なし')
 
         payload = {
@@ -58,6 +52,7 @@ def home():
         end_idx = ai_text.rfind('}') + 1
         if start_idx != -1 and end_idx > 0:
             json_str = ai_text[start_idx:end_idx]
+            # JSONとして妥当かチェックして返す
             return jsonify(json.loads(json_str))
         else:
             raise ValueError("AI response does not contain valid JSON")
