@@ -16,7 +16,7 @@ def get_prompt():
                 return f.read().strip()
     except Exception as e:
         print(f"Prompt loading error: {e}")
-    return "あなたは優秀なCBTカウンセラーです。必ずJSON形式で回答してください。"
+    return "CBTカウンセラーとしてJSON形式で回答してください。"
 
 SYSTEM_PROMPT = get_prompt()
 
@@ -24,23 +24,20 @@ SYSTEM_PROMPT = get_prompt()
 def home():
     if request.method == 'OPTIONS':
         return '', 200
-    
     if request.method == 'GET':
         return "CBT Backend is Online"
 
     api_key = os.environ.get("GEMINI_API_KEY", "").strip()
-    url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
+    url = "[https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent](https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent)"
 
     try:
         data = request.get_json()
         thought = data.get('thought', '入力なし')
-
         payload = {
             "contents": [{"parts": [{"text": f"{SYSTEM_PROMPT}\n\nユーザーの思考: {thought}"}]}]
         }
 
         response = requests.post(url, params={"key": api_key}, json=payload, timeout=25)
-        
         if response.status_code != 200:
             return jsonify({"error": "Gemini API Error", "detail": response.text}), response.status_code
 
@@ -53,13 +50,11 @@ def home():
             json_str = ai_text[start_idx:end_idx]
             return jsonify(json.loads(json_str))
         else:
-            raise ValueError("AI response does not contain valid JSON")
+            raise ValueError("Invalid JSON response")
 
     except Exception as e:
-        print(f"Error: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    # ポート番号の取得とサーバー起動を確実に行います
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port)
