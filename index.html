@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests; connect-src 'self' https://therapy-xsoy.onrender.com;">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ココロの整理 - CBTアシスタント</title>
+    <title>ココロ of 整理 - CBTアシスタント</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
@@ -49,7 +49,7 @@
         <div id="input-section" class="mint-card shadow-sm p-8 space-y-6">
             <div>
                 <label class="block text-lg font-semibold mb-3">1. 今、頭に浮かんでいることは？</label>
-                <textarea id="user-thought" class="w-full h-32 p-4 border border-teal-100 rounded-xl focus:ring-2 focus:ring-teal-400 outline-none bg-teal-50/30 transition" placeholder="例：仕事でミスをした。自分はもう終わりだ。"></textarea>
+                <textarea id="user-thought" class="w-full h-32 p-4 border border-teal-100 rounded-xl focus:ring-2 focus:ring-teal-400 outline-none bg-teal-50/30 transition" placeholder="今の考えを入力してください..."></textarea>
             </div>
             <button onclick="analyzeThought()" id="submit-btn" class="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-4 rounded-2xl shadow-lg transition-all text-lg">
                 心を分析する
@@ -109,22 +109,24 @@
 
         async function analyzeThought() {
             const thought = document.getElementById('user-thought').value;
-            if (!thought) return alert('今の気持ちを入力してください');
+            if (!thought) return alert('入力してください');
 
             document.getElementById('input-section').classList.add('hidden');
             document.getElementById('loading').classList.remove('hidden');
 
             try {
+                // 正しいURL https://therapy-xsoy.onrender.com/ に変更
                 const response = await fetch('https://therapy-xsoy.onrender.com/', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ thought: thought })
                 });
-                if (!response.ok) throw new Error('Server Error');
+
+                if (!response.ok) throw new Error('Status: ' + response.status);
                 const data = await response.json();
                 displayResults(data);
             } catch (error) {
-                alert("エラーが発生しました。");
+                alert("サーバーへの接続に失敗しました。");
                 location.reload();
             }
         }
@@ -133,25 +135,23 @@
             document.getElementById('loading').classList.add('hidden');
             document.getElementById('result-section').classList.remove('hidden');
 
-            const res = (typeof data === 'string') ? JSON.parse(data) : data;
-
             const distList = document.getElementById('distortion-list');
             distList.innerHTML = '';
-            (res.distortions || []).forEach(d => {
+            (data.distortions || []).forEach(d => {
                 const span = document.createElement('span');
                 span.className = 'distortion-tag';
                 span.innerText = d;
                 distList.appendChild(span);
             });
 
-            document.getElementById('preach-text').innerText = res.preach_mode || '-';
-            document.getElementById('blank-text').innerText = res.blank_mode || '-';
-            document.getElementById('heal-text').innerText = res.heal_mode || '-';
-            document.getElementById('benefit-text').innerText = res.benefit || '-';
+            document.getElementById('preach-text').innerText = data.preach_mode || '-';
+            document.getElementById('blank-text').innerText = data.blank_mode || '-';
+            document.getElementById('heal-text').innerText = data.heal_mode || '-';
+            document.getElementById('benefit-text').innerText = data.benefit || '-';
 
             const actionList = document.getElementById('action-list');
             actionList.innerHTML = '';
-            (res.actions || []).forEach(a => {
+            (data.actions || []).forEach(a => {
                 const li = document.createElement('li');
                 li.innerText = a;
                 actionList.appendChild(li);
