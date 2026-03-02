@@ -29,7 +29,7 @@ def home():
         return "CBT Backend is Online"
 
     api_key = os.environ.get("GEMINI_API_KEY", "").strip()
-    url = "[https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent](https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent)"
+    url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
 
     try:
         data = request.get_json()
