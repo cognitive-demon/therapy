@@ -12,8 +12,10 @@
             font-family: 'Noto Sans JP', sans-serif;
             background-color: #f0fdfa; 
             color: #2d3748;
-            overflow-y: auto;
+            margin: 0;
+            padding: 0;
             min-height: 100vh;
+            /* スクロールを制限するコードをすべて削除 */
         }
         .mint-card { background: white; border: 1px solid #ccf2e9; border-radius: 1.5rem; }
         .mint-button {
@@ -24,10 +26,14 @@
             background-color: #38a169;
             transform: translateY(-1px);
         }
+        /* 固定表示(fixed)をやめ、通常のブロックとして配置 */
         #password-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #f0fdfa; z-index: 9999; display: flex;
-            align-items: center; justify-content: center; padding: 1rem;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
         }
         .hidden { display: none !important; }
         .distortion-tag {
@@ -42,7 +48,7 @@
 <body class="pb-12">
 
     <div id="password-overlay">
-        <div class="w-full max-w-xl space-y-8 animate-fade-in">
+        <div class="w-full max-w-xl space-y-8">
             <div class="text-center space-y-4">
                 <h1 class="text-4xl md:text-5xl font-bold text-slate-700 tracking-tight">AIココロの棚卸し</h1>
                 <p class="text-teal-600 font-medium text-lg">〜 認知行動療法に基づく自己理解ツール 〜</p>
@@ -50,7 +56,7 @@
 
             <div class="bg-blue-50 border border-blue-100 rounded-2xl p-6 text-sm text-slate-600 shadow-sm">
                 <div class="flex items-center gap-2 mb-3 font-bold text-blue-700">🛡️ プライバシーへの配慮</div>
-                <p>本アプリでは、氏名・メールアドレス等の個人情報の入力は一切不要です。入力データは解析終了後に破棄され、サーバーに残ることはありません。</p>
+                <p>本アプリでは、個人情報の入力は一切不要です。入力データは解析終了後に破棄され、サーバーに残ることはありません。</p>
             </div>
 
             <div class="bg-white/60 border border-white rounded-2xl p-6 grid grid-cols-2 gap-3 text-sm text-indigo-600 font-medium">
@@ -154,8 +160,10 @@
         function checkPassword() {
             const pass = document.getElementById('pass-input').value;
             if (pass === "okok") {
+                // セクションごと非表示にし、メインを表示（通常のフロー）
                 document.getElementById('password-overlay').classList.add('hidden');
                 document.getElementById('main-content').classList.remove('hidden');
+                window.scrollTo(0, 0);
             } else {
                 alert("パスワードが違います。");
             }
