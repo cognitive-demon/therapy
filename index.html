@@ -6,67 +6,110 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AIココロの棚卸し - 認知行動療法人生相談</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --mint-main: #e6f7f3;
-            --mint-accent: #4fd1c5;
-            --mint-dark: #2d3748;
-        }
         body { 
+            font-family: 'Noto Sans JP', sans-serif;
             background-color: #f0fdfa; 
-            color: var(--mint-dark);
+            color: #2d3748;
             overflow-y: auto;
             min-height: 100vh;
         }
         .mint-card { background: white; border: 1px solid #ccf2e9; border-radius: 1.5rem; }
-        .distortion-tag {
-            background-color: #fef2f2;
-            color: #ef4444;
-            padding: 4px 12px;
-            border-radius: 9999px;
-            font-weight: bold;
-            font-size: 0.875rem;
-            border: 1px solid #fee2e2;
+        .mint-button {
+            background-color: #48bb78; 
+            transition: all 0.3s ease;
+        }
+        .mint-button:hover {
+            background-color: #38a169;
+            transform: translateY(-1px);
         }
         #password-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #f0fdfa; z-index: 9999; display: flex;
-            align-items: center; justify-content: center;
+            align-items: center; justify-content: center; padding: 1rem;
         }
         .hidden { display: none !important; }
-        details summary { cursor: pointer; list-style: none; outline: none; }
+        .distortion-tag {
+            background-color: #fef2f2; color: #ef4444;
+            padding: 4px 12px; border-radius: 9999px;
+            font-weight: bold; font-size: 0.875rem; border: 1px solid #fee2e2;
+        }
         details summary::-webkit-details-marker { display: none; }
+        summary { list-style: none; outline: none; }
     </style>
 </head>
 <body class="pb-12">
 
     <div id="password-overlay">
-        <div class="mint-card p-8 shadow-xl text-center space-y-4 mx-4 w-full max-w-sm">
-            <h2 class="text-xl font-bold text-teal-800">パスワードが必要です</h2>
-            <input type="password" id="pass-input" class="w-full p-3 border border-teal-100 rounded-xl outline-none focus:ring-2 focus:ring-teal-400" placeholder="Password">
-            <button onclick="checkPassword()" class="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 rounded-xl transition">認証</button>
+        <div class="w-full max-w-xl space-y-8 animate-fade-in">
+            <div class="text-center space-y-4">
+                <h1 class="text-4xl md:text-5xl font-bold text-slate-700 tracking-tight">AIココロの棚卸し</h1>
+                <p class="text-teal-600 font-medium text-lg">〜 認知行動療法に基づく自己理解ツール 〜</p>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-100 rounded-2xl p-6 text-sm text-slate-600 shadow-sm">
+                <div class="flex items-center gap-2 mb-3 font-bold text-blue-700">🛡️ プライバシーへの配慮</div>
+                <p>本アプリでは、氏名・メールアドレス等の個人情報の入力は一切不要です。入力データは解析終了後に破棄され、サーバーに残ることはありません。</p>
+            </div>
+
+            <div class="bg-white/60 border border-white rounded-2xl p-6 grid grid-cols-2 gap-3 text-sm text-indigo-600 font-medium">
+                <div>✓ 3つの時代別アドバイス</div>
+                <div>✓ 思考のクセの可視化</div>
+                <div>✓ 認知の歪みを分析</div>
+                <div>✓ 明日へのアクション提案</div>
+            </div>
+
+            <div class="text-center space-y-4">
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">PRIVATE ACCESS</p>
+                <div class="relative max-w-sm mx-auto">
+                    <input type="password" id="pass-input" 
+                        class="w-full p-4 bg-white border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-teal-400 transition text-center shadow-inner" 
+                        placeholder="パスワードを入力してください">
+                </div>
+                <button onclick="checkPassword()" class="w-full max-w-sm mint-button text-white font-bold py-4 rounded-xl shadow-lg shadow-green-100 text-lg">
+                    分析を開始する
+                </button>
+
+                <div class="max-w-sm mx-auto pt-2">
+                    <details class="group bg-white/50 border border-slate-200 rounded-xl overflow-hidden">
+                        <summary class="flex items-center justify-between p-3 cursor-pointer text-slate-600 hover:bg-white/80 transition">
+                            <span class="text-sm flex items-center gap-2">📘 使用マニュアルを表示</span>
+                        </summary>
+                        <div class="p-4 text-left text-xs text-slate-500 leading-relaxed border-t border-slate-100 space-y-2">
+                            <p><strong>1. 思考の入力:</strong> 不安やモヤモヤをそのまま入力してください。</p>
+                            <p><strong>2. とらわれ度の設定:</strong> その考えをどれくらい信じているか調整します。</p>
+                            <p><strong>3. 多角的な分析:</strong> 3つの視点からあなたの認知を解きほぐします。</p>
+                        </div>
+                    </details>
+                </div>
+            </div>
+
+            <footer class="text-center pt-8 text-[10px] text-slate-400">
+                <p>© 2026 PsychoLogicAnalyzers (AI Counselor Gemini 2.5)</p>
+            </footer>
         </div>
     </div>
 
     <div id="main-content" class="hidden max-w-2xl mx-auto px-4 py-10">
         <header class="text-center mb-10">
-            <h1 class="text-3xl font-bold text-teal-800">AIココロの棚卸しアプリ</h1>
-            <p class="text-teal-600 mt-2">あなたの認知の歪みを、少し変えてみませんか。</p>
+            <h1 class="text-3xl font-bold text-teal-800">分析ワークスペース</h1>
+            <p class="text-teal-600 mt-2">今の考えを棚卸ししましょう。</p>
         </header>
 
         <div id="input-section" class="mint-card shadow-sm p-8 space-y-6">
             <div>
-                <label class="block text-lg font-semibold mb-3">1. 今、頭に浮かんでいることは？</label>
-                <textarea id="user-thought" class="w-full h-32 p-4 border border-teal-100 rounded-xl focus:ring-2 focus:ring-teal-400 outline-none bg-teal-50/30 transition" placeholder="例：連絡が来ない。嫌われたに違いない。"></textarea>
+                <label class="block text-lg font-semibold mb-3 text-slate-700">1. 今、頭に浮かんでいることは？</label>
+                <textarea id="user-thought" class="w-full h-32 p-4 border border-slate-100 rounded-xl focus:ring-2 focus:ring-teal-400 outline-none bg-slate-50 transition" placeholder="例：大事なプレゼンで失敗して、みんなに呆れられた気がする。"></textarea>
             </div>
             <div>
-                <label class="block text-lg font-semibold mb-1">2. その考えにどれくらいとらわれていますか？</label>
+                <label class="block text-lg font-semibold mb-1 text-slate-700">2. その考えにどれくらいとらわれていますか？</label>
                 <div class="flex items-center gap-4">
-                    <input type="range" id="belief-range" min="0" max="100" value="50" class="accent-teal-500" oninput="document.getElementById('range-val').innerText = this.value + '%'">
+                    <input type="range" id="belief-range" min="0" max="100" value="50" class="accent-teal-500 flex-1" oninput="document.getElementById('range-val').innerText = this.value + '%'">
                     <span id="range-val" class="text-2xl font-bold text-teal-600 w-16 text-right">50%</span>
                 </div>
             </div>
-            <button onclick="analyzeThought()" id="submit-btn" class="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-4 rounded-2xl transition-all shadow-lg text-lg">
+            <button onclick="analyzeThought()" id="submit-btn" class="w-full mint-button text-white font-bold py-4 rounded-2xl shadow-lg text-lg transition-all">
                 心を分析する
             </button>
         </div>
@@ -78,39 +121,29 @@
 
         <div id="result-section" class="hidden space-y-6 mt-8">
             <div class="space-y-4">
-                <h2 class="text-xl font-bold text-teal-800 text-center mb-4">3つのモードでアドバイス</h2>
                 <details class="bg-orange-50 border border-orange-100 rounded-3xl overflow-hidden">
-                    <summary class="p-6 font-bold text-orange-600 flex justify-between items-center">
-                        <span>📢 昭和モード</span>
-                    </summary>
+                    <summary class="p-6 font-bold text-orange-600">📢 昭和モード</summary>
                     <div class="px-6 pb-6 text-orange-900 border-t border-orange-100/50 pt-4"><p id="preach-text"></p></div>
                 </details>
                 <details class="bg-slate-100 border border-slate-200 rounded-3xl overflow-hidden">
-                    <summary class="p-6 font-bold text-slate-600 flex justify-between items-center">
-                        <span>😐 平成モード</span>
-                    </summary>
+                    <summary class="p-6 font-bold text-slate-600">😐 平成モード</summary>
                     <div class="px-6 pb-6 text-slate-800 border-t border-slate-200/50 pt-4"><p id="blank-text"></p></div>
                 </details>
                 <details class="bg-pink-50 border border-pink-100 rounded-3xl overflow-hidden">
-                    <summary class="p-6 font-bold text-pink-500 flex justify-between items-center">
-                        <span>🌸 令和モード</span>
-                    </summary>
+                    <summary class="p-6 font-bold text-pink-500">🌸 令和モード</summary>
                     <div class="px-6 pb-6 text-pink-900 border-t border-pink-100/50 pt-4"><p id="heal-text"></p></div>
                 </details>
             </div>
-
             <div class="mint-card p-6 shadow-sm text-center">
-                <h3 class="text-xs font-bold text-teal-400 uppercase mb-4">見つかった認知の歪み</h3>
+                <h3 class="text-xs font-bold text-teal-400 uppercase mb-4 tracking-widest">見つかった認知の歪み</h3>
                 <div id="distortion-list" class="flex flex-wrap justify-center gap-2"></div>
             </div>
-
             <div class="mint-card p-6 border-l-4 border-l-teal-400">
                 <h3 class="font-bold text-teal-700 mb-2">💡 その考えのメリット</h3>
-                <p id="benefit-text" class="text-slate-600 text-sm"></p>
+                <p id="benefit-text" class="text-slate-600 text-sm leading-relaxed"></p>
             </div>
-
             <div class="bg-teal-600 text-white rounded-3xl p-8 shadow-md">
-                <h3 class="text-teal-100 text-sm font-bold uppercase mb-4">🚀 次のステップ</h3>
+                <h3 class="text-teal-100 text-sm font-bold uppercase mb-4 tracking-wider">🚀 次のステップ</h3>
                 <ul id="action-list" class="list-disc list-inside space-y-2 font-medium"></ul>
             </div>
             <button onclick="location.reload()" class="w-full py-6 text-teal-500 font-bold flex items-center justify-center gap-2">← 別のことを相談する</button>
